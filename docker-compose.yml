@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: otel-collector
+    restart: unless-stopped
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    ports:
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+      - "13133:13133" # Health check extension
+      - "9464:9464"   # Prometheus metrics endpoint
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:13133/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: otlm-app:latest
+    container_name: otlm-app
+    depends_on:
+      otel-collector:
+        condition: service_healthy
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring Boot OTLP metrics/traces configuration (HTTP metrics, gRPC traces)
+      MANAGEMENT_OTLP_METRICS_EXPORT_URL: http://otel-collector:4318/v1/metrics
+      MANAGEMENT_TRACING_EXPORT_OTLP_ENDPOINT: http://otel-collector:4317
+      MANAGEMENT_OTLP_LOGS_EXPORT_URL: http://otel-collector:4318/v1/logs
+      # Optional: reduce noise / set sampling probability (1.0 means sample all)
+      MANAGEMENT_TRACING_SAMPLING_PROBABILITY: 1.0
+      # Resource attributes for OTel
+      OTEL_RESOURCE_ATTRIBUTES: service.name=otlm-app,service.namespace=testApp,service.version=0.0.1-SNAPSHOT
+      # JVM options (tune as needed)
+      JAVA_OPTS: -Xms256m -Xmx512m
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+networks:
+  default:
+    name: otlm-net

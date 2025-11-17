@@ -1,0 +1,12 @@
+# Optional multistage build (use in compose by setting dockerfile: Dockerfile.multistage)
+FROM gradle:8.7-jdk21-alpine AS build
+WORKDIR /home/gradle/project
+COPY . .
+RUN gradle clean bootJar --no-daemon
+
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+COPY --from=build /home/gradle/project/build/libs/*SNAPSHOT.jar app.jar
+EXPOSE 8080
+ENTRYPOINT ["java","-jar","app.jar"]
+
