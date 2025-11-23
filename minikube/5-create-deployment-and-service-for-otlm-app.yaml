@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otlm-app
+  namespace: otlm-namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: otlm-app
+  template:
+    metadata:
+      labels:
+        app: otlm-app
+    spec:
+      containers:
+        - name: otlm-app
+          image: "anilogutveren/otlm-app:latest"
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MANAGEMENT_TRACING_EXPORT_OTLP_ENDPOINT
+              value: "http://tracing.istio-system.svc.cluster.local:4318/v1/traces"
+            - name: OTEL_SERVICE_NAME
+              value: "otlm-app"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: otlm-app-service
+  namespace: otlm-namespace
+spec:
+  selector:
+    app: otlm-app
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP

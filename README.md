@@ -27,6 +27,10 @@ These additional references should also help you:
 # Local Setup
 ```sh
 docker build -t otlm-app:latest .
+```
+
+Run the image:
+```sh
 docker run -p 8080:8080 --name otlm-app otlm-app:latest
 ```
 
@@ -41,6 +45,7 @@ Services:
 
 Access:
 - App: http://localhost:8080
+- Jaeger UI: http://localhost:16686
 - App health: http://localhost:8080/actuator/health
 - Collector health: http://localhost:13133/health
 - Collector Prometheus: http://localhost:9464/metrics
@@ -81,7 +86,9 @@ It will also create a namespace with name otlm-namespace for the otlm-app
 
 To be able to access to Kiali and other istio tools:
 ![kiali-PortForward.png](docs/kiali-PortForward.png)
-Thank navigate to localhost:20001/kiali/console in the browser
+Than navigate to localhost:20001/kiali/console in the browser
 ![kiali.png](docs/kiali.png)
 
+JaegerUI:
+![Jaeger.png](docs/Jaeger.png)
 
