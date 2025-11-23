@@ -1,3 +1,27 @@
 spring:
   application:
     name: otlmApp
+
+management:
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http_server_requests: true
+  tracing:
+    sampling:
+      probability: 1.0
+  otlp:
+    metrics:
+      export:
+        url: http://otel-collector:4318/v1/metrics
+    logs:
+      export:
+        url: http://otel-collector:4318/v1/logs
+    tracing:
+      export:
+        otlp:
+          endpoint: http://otel-collector:4317
+
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
