@@ -1,6 +1,5 @@
 package com.testApp.otlmApp.adapter.persistence
 
-import com.testApp.otlmApp.adapter.persistence.entities.JobDbEntity
 import com.testApp.otlmApp.adapter.persistence.repository.JobRepositoryJpa
 import com.testApp.otlmApp.domain.model.JobEntity
 import com.testApp.otlmApp.domain.repository.JobRepository
@@ -19,11 +18,8 @@ class JobRepositoryAdapter(
     }
 
     override fun saveAll(jobs: List<JobEntity>): List<JobEntity> {
-        return jobRepositoryJpa.saveAllJobs(jobs)
+        TODO("Not yet implemented")
     }
 
-    fun JobEntity.toEntity() = JobDbEntity(
-
-    )
 
 }

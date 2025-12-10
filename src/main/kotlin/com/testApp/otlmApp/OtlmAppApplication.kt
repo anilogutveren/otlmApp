@@ -7,6 +7,6 @@ import org.springframework.boot.runApplication
 class OtlmAppApplication
 
 fun main(args: Array<String>) {
-	ElasticApmAttacher.attach();
+	//ElasticApmAttacher.attach();
 	runApplication<OtlmAppApplication>(*args)
 }

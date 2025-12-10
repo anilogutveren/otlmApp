@@ -2,13 +2,17 @@ receivers:
   otlp:
     protocols:
       http:
+        endpoint: "0.0.0.0:4318" # Explicitly bind to all interfaces
       grpc:
+        endpoint: "0.0.0.0:4317"
 
 exporters:
+  # 1. Define the 'debug' exporter (replaces 'logging' in newer versions)
   debug:
     verbosity: detailed
 
-  otlp:
+  # 2. Define the Jaeger exporter
+  otlp/jaeger:
     endpoint: jaeger:4317
     tls:
       insecure: true
@@ -17,7 +21,8 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      exporters: [debug]
+      # MATCHING NAME: Uses 'debug' defined above
+      exporters: [otlp/jaeger, debug]
 
     logs:
       receivers: [otlp]
@@ -25,4 +30,5 @@ service:
 
     traces:
       receivers: [otlp]
-      exporters: [otlp, debug]
+      # MATCHING NAMES: Uses 'otlp/jaeger' and 'debug' defined above
+      exporters: [otlp/jaeger, debug]
