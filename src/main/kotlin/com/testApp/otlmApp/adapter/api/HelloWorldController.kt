@@ -1,4 +1,4 @@
-package com.testApp.otlmApp.controller
+package com.testApp.otlmApp.adapter.api
 
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory

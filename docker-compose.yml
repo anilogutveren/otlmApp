@@ -1,8 +1,16 @@
+# yaml
 services:
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    command: ["--config=/etc/otelcol/config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      - 4318:4318   # OTLP HTTP (metrics + traces)
   jaeger:
     image: jaegertracing/all-in-one:latest
-    ports:
-      - 4318:4318
-      - 16686:16686
     environment:
       - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - 16686:16686
+      - "4317"        # Expose OTLP gRPC internally (Docker handles this automatically usually)
